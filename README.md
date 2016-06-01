@@ -2,9 +2,9 @@
   <img src="https://raw.githubusercontent.com/alexisph/pvpaR/master/App/www/logo_small.png" alt="PV Performance Analysis in R">
 </h1>
 
-[![GitHub issues](https://img.shields.io/github/issues/badges/shields.svg?maxAge=2592000?style=flat)](https://github.com/alexisph/pvpaR/issues)
+[![GitHub issues](https://img.shields.io/github/issues/alexisph/pvpaR.svg?maxAge=2592000?style=flat)](https://github.com/alexisph/pvpaR/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000?style=flat)](https://github.com/alexisph/pvpaR/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/alexisph/pvpaR.svg?maxAge=2592000?style=flat)](https://github.com/alexisph/pvpaR/blob/master/LICENSE)
 
 _**pvpaR** is a platform for the automatic identification and classification of faults and performance loss in PV systems_
 
