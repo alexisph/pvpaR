@@ -1,5 +1,5 @@
 <h1>
-  [![PV Performance Analysis in R](App/www/logo_small.png)]
+  [![PV Performance Analysis in R](https://raw.githubusercontent.com/alexisph/pvpaR/master/App/www/logo_small.png)]
 </h1>
 
 [![GitHub issues](https://img.shields.io/github/issues/badges/shields.svg?maxAge=2592000?style=flat)](https://github.com/alexisph/pvpaR/issues)
