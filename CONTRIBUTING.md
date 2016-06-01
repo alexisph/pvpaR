@@ -12,7 +12,7 @@ Issue or bug reports are created and reviewed on the [issues tracker](https://gi
 
 Before [creating a pull request](https://help.github.com/articles/creating-a-pull-request/), please read our general code guidelines:
 
-- When indenting your code, use **two** spaces. Never use tabs or mix tabs and spaces.
+- When indenting your code, use **two** spaces. Do not use tabs or mix tabs and spaces.
 - Place spaces around all infix operators (=, +, -, <-, etc.). The same rule applies when using = in function calls.
 - File names should be meaningful and end in .R. If files need to be run in sequence, prefix them with numbers.
 - Variable and function names should be **lowercase**. Use an **underscore** (_) to separate words within a name. Generally, variable names should be nouns and function names should be verbs. Strive for names that are concise and meaningful.
@@ -22,10 +22,10 @@ Before [creating a pull request](https://help.github.com/articles/creating-a-pul
 
 ### General guidelines for creating pull requests:
 
-- **One pull request per feature**. If you want to do more than one thing, send multiple *pull requests*.
-- **Send coherent history**. Make sure each individual commit in your *pull request* is meaningful.
+- **One pull request per feature**. If you want to do more than one thing, send multiple pull requests.
+- **Send coherent history**. Make sure each individual commit in your pull request is meaningful.
 
-### Please follow these guidelines; it's the best way to get your work included in the project!
+### Please follow these guidelines; it's the best way to incorporate your work in the project:
 
 - [Click here](https://github.com/alexisph/pvpaR) to **clone** the project
 - If you cloned a while ago, get the latest changes from upstream:

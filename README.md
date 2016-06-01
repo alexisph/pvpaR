@@ -1,12 +1,12 @@
 <h1>
-  <img src="https://raw.githubusercontent.com/alexisph/pvpaR/master/App/www/logo_small.png" alt="PV Performance Analysis in R">
+  <img src="https://raw.githubusercontent.com/alexisph/pvpaR/master/App/www/logo_small.png" alt="Photovoltaic Performance Analysis in R">
 </h1>
 
 [![GitHub issues](https://img.shields.io/github/issues/alexisph/pvpaR.svg?maxAge=2592000?style=flat)](https://github.com/alexisph/pvpaR/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com)
 [![license](https://img.shields.io/github/license/alexisph/pvpaR.svg?maxAge=2592000?style=flat)](https://github.com/alexisph/pvpaR/blob/master/LICENSE)
 
-_**pvpaR** is a platform for the automatic identification and classification of faults and performance loss in PV systems_
+_**pvpaR** is a platform for the automatic identification and classification of faults and performance loss in Photovoltaic systems_
 
 The paper describing the platform will be published in the 43rd IEEE Photovoltaic Specialists conference proceedings, under the title "Development of a Novel Web Application for Automatic Photovoltaic System Performance Analysis and Fault Identification."
 A poster will be presented at the above conference on the 8th of June 2016, at 12:00 in Area 9, Exhibit Hall A1, Oregon Convention Center.
@@ -14,15 +14,16 @@ A poster will be presented at the above conference on the 8th of June 2016, at 1
 
 ## Features
 
-- Import [time-series](https://cran.r-project.org/web/packages/zoo/index.html) of PV system measurements and meteorological conditions
+- Import [time-series](https://cran.r-project.org/web/views/TimeSeries.html) of PV system measurements and meteorological conditions
+- Imported data can be in the form of flat files (e.g. csv, xls(x), txt etc.) or database tables (e.g. MySQL, PostgreSQL, Redis, SQLite, MongoDB, Cassandra etc.) or scraped from the [web](https://cran.r-project.org/web/views/WebTechnologies.html)
 - User selectable date ranges
 - Plot measurements and model results as [dynamic graphs](http://dygraphs.com/)
-- Model PV system performance from the meteorological time-series
-- Model irradiance and module temperature
-- [Transpose](https://cran.r-project.org/web/packages/solaR/index.html) global horizontal irradiance to the plane of array and checks for measurement errors
-- Compares model results with recorded measurements
-- Identifies faults and abnormal performance loss
-- Classifies the identified faults and prints the timestamp of the identified fault
+- Model the expected PV system performance from meteorological measurements
+- Model and [transpose](https://cran.r-project.org/web/packages/solaR/index.html) the incident irradiance to the plane of array
+- Model module temperature
+- Compares model results with recorded measurements and checks for measurement errors
+- Identifies outliers and abnormal performance losses
+- Classifies the identified faults and shows the occurence of the identified fault
 
 
 ## Usage
@@ -85,12 +86,14 @@ The following features are planned for development:
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on contributing to this project and submitting clean code. The list of current and past contributors can be found in [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on contributing to this project and submitting clean code.
+
+Special thanks go to all the people who contributed to this project. The list of current and past contributors can be found in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 
 ## License
 
-Copyright (c) 2014--2016 [Alexander Phinikarides](mailto:alexisph@gmail.com), [Christiana Shimitra](mailto:shchristiana93@gmail.com)
+Copyright (c) 2014--2016 [Alexander Phinikarides](mailto:alexisph@gmail.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
