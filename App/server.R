@@ -438,7 +438,7 @@ shinyServer(
                 main = "",
                 ylab = "Measured DC Power [W]")  %>%
           dySeries("pdc") %>%
-          dySeries("short_circuit", drawPoints = TRUE, strokeWidth = 0, pointSize = 5) %>%
+          dySeries("mppt_error", drawPoints = TRUE, strokeWidth = 0, pointSize = 5) %>%
           dySeries("disconnection", drawPoints = TRUE, strokeWidth = 0, pointSize = 5) %>%
           dySeries("shading", drawPoints = TRUE, strokeWidth = 0, pointSize = 5) %>%
           dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"),
