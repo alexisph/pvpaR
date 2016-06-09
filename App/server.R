@@ -37,6 +37,66 @@ shinyServer(
     })
 
 
+    # Calculate the performance and detect the faults -------------------------
+
+    # Model results
+    modelled <- reactive({
+      if(length(dataWithoutNA_range()) != 0) {
+        irrad_sim <- sim_irrad(dataWithoutNA_range()$ghi, dataWithoutNA_range()$tamb,
+                               lat, tiltPV, azPV, input$panel_soiling, refl)
+        tmod_sim <- sim_tmod(dataWithoutNA_range()$tmod, dataWithoutNA_range()$tamb,
+                             dataWithoutNA_range()$gpoa, dataWithoutNA_range()$uw,
+                             dataWithoutNA_range()$aw, dataWithoutNA_range()$hrel)
+        vdc_sim <- sim_vdc(dataWithoutNA_range()$gpoa, dataWithoutNA_range()$tmod,
+                           dataWithoutNA_range()$vdc, dataWithoutNA_range()$uw, beta)
+        idc_sim <- sim_idc(dataWithoutNA_range()$gpoa, irrad_sim$global,
+                           dataWithoutNA_range()$tmod,
+                           tmod_sim, alpha, dataWithoutNA_range()$idc)
+        pdc_sim <- sim_pdc(dataWithoutNA_range()$gpoa, irrad_sim$global,
+                           dataWithoutNA_range()$tmod,
+                           tmod_sim, sysArea, gamma, nSTC)
+        data.frame(irrad_sim = irrad_sim, tmod_sim = tmod_sim, vdc_sim = vdc_sim,
+                   idc_sim = idc_sim, pdc_sim = pdc_sim)
+      } else return(0)
+    })
+
+    # Calculate outliers
+    outliers <- reactive({
+      if(length(dataWithoutNA_range()) != 0) {
+        irrad_outliers <- outlier_det(dataWithoutNA_range()$gpoa,
+                                      modelled()$irrad_sim.global)
+        tmod_outliers <- outlier_det(dataWithoutNA_range()$tmod,
+                                     modelled()$tmod_sim)
+        vdc_outliers <- outlier_det(modelled()$vdc_sim.meas_tc,
+                                    modelled()$vdc_sim.pred_tc)
+        idc_outliers <- outlier_det(modelled()$idc_sim.meas_tc,
+                                    modelled()$idc_sim.pred_tc)
+        pdc_outliers <- outlier_det(modelled()$pdc_sim.meas_tc,
+                                    modelled()$pdc_sim.pred_tc)
+        pac_outliers <- outlier_det(dataWithoutNA_range()$pdc,
+                                    dataWithoutNA_range()$pac)
+        data.frame(irrad_outliers = irrad_outliers, tmod_outliers = tmod_outliers,
+                   vdc_outliers = vdc_outliers, idc_outliers = idc_outliers,
+                   pdc_outliers = pdc_outliers, pac_outliers = pac_outliers)
+      } else return(0)
+    })
+
+    # Calculate Capture Losses and classify faults
+    classified <- reactive({
+      if(length(dataWithoutNA_range()) != 0) {
+        fault_classification(dataWithoutNA_range()$gpoa,
+                             modelled()$pdc_sim.meas_tc,
+                             modelled()$irrad_sim.global,
+                             modelled()$pdc_sim.pred_tc,
+                             modelled()$idc_sim.meas_tc,
+                             modelled()$idc_sim.pred_tc,
+                             modelled()$vdc_sim.meas_tc,
+                             modelled()$vdc_sim.pred_tc,
+                             sysWp)
+      } else return(0)
+    })
+
+
     # Print the PV system specs table and map ---------------------------------
 
     output$location <- renderTable({
@@ -146,68 +206,13 @@ shinyServer(
     })
 
 
-    # Calculate the performance and detect the faults -------------------------
-
-    # Model results
-    modelled <- reactive({
-      if(length(dataWithoutNA_range()) != 0) {
-        irrad_sim <- sim_irrad(dataWithoutNA_range()$ghi, dataWithoutNA_range()$tamb,
-                               lat, tiltPV, azPV, input$panel_soiling, refl)
-        tmod_sim <- sim_tmod(dataWithoutNA_range()$tmod, dataWithoutNA_range()$tamb,
-                             dataWithoutNA_range()$gpoa, dataWithoutNA_range()$uw,
-                             dataWithoutNA_range()$aw, dataWithoutNA_range()$hrel)
-        vdc_sim <- sim_vdc(dataWithoutNA_range()$gpoa, dataWithoutNA_range()$tmod,
-                           dataWithoutNA_range()$vdc, dataWithoutNA_range()$uw, beta)
-        idc_sim <- sim_idc(dataWithoutNA_range()$gpoa, irrad_sim$global,
-                           dataWithoutNA_range()$tmod,
-                           tmod_sim, alpha, dataWithoutNA_range()$idc)
-        pdc_sim <- sim_pdc(dataWithoutNA_range()$gpoa, irrad_sim$global,
-                           dataWithoutNA_range()$tmod,
-                           tmod_sim, sysArea, gamma, nSTC)
-        data.frame(irrad_sim = irrad_sim, tmod_sim = tmod_sim, vdc_sim = vdc_sim,
-                   idc_sim = idc_sim, pdc_sim = pdc_sim)
-      } else return(0)
-    })
-
-    # Calculate outliers
-    outliers <- reactive({
-      if(length(dataWithoutNA_range()) != 0) {
-        irrad_outliers <- outlier_det(dataWithoutNA_range()$gpoa,
-                                      modelled$irrad_sim$global)
-        tmod_outliers <- outlier_det(dataWithoutNA_range()$tmod,
-                                     modelled$tmod_sim)
-        vdc_outliers <- outlier_det(modelled$vdc_sim$meas_tc,
-                                    modelled$vdc_sim$pred_tc)
-        idc_outliers <- outlier_det(modelled$idc_sim$meas_tc,
-                                    modelled$idc_sim$pred_tc)
-        pdc_outliers <- outlier_det(modelled$pdc_sim$meas_tc,
-                                    modelled$pdc_sim$pred_tc)
-        pac_outliers <- outlier_det(dataWithoutNA_range()$pdc,
-                                    dataWithoutNA_range()$pac)
-        data.frame(irrad_outliers = irrad_outliers, tmod_outliers = tmod_outliers,
-                   vdc_outliers = vdc_outliers, idc_outliers = idc_outliers,
-                   pdc_outliers = pdc_outliers, pac_outliers = pac_outliers)
-      } else return(0)
-    })
-
-    # Calculate Capture Losses and classify faults
-    classified <- reactive({
-      if(length(dataWithoutNA_range()) != 0) {
-        fault_classification(dataWithoutNA_range()$gpoa, modelled$pdc_sim$meas_tc,
-                             modelled$irrad_sim$global, modelled$pdc_sim$pred_tc,
-                             modelled$idc_sim$meas_tc, modelled$idc_sim$pred_tc,
-                             modelled$vdc_sim$meas_tc, modelled$vdc_sim$pred_tc,
-                             sysWp)
-      } else return(0)
-    })
-
-
     # Measurements tab --------------------------------------------------------
 
     output$p_range <- renderDygraph({
       if(length(dataWithoutNA_range()) != 0) {
         dygraph(dataWithoutNA_range()[, c("pdc", "pac")],
-                xlab = "Time",
+                xlab = "",
+                main = "",
                 ylab = "Measured Power [W]",
                 group = "meas") %>%
           dyOptions(colors = RColorBrewer::brewer.pal(8, "Dark2"),
@@ -219,7 +224,7 @@ shinyServer(
     output$g_range <- renderDygraph({
       if(length(dataWithoutNA_range()) != 0) {
         dygraph(dataWithoutNA_range()[, c("gpoa", "gref")],
-                xlab =  "Time",
+                xlab = "",
                 main = "",
                 ylab = "Measured Global Irradiance [Wm-2]",
                 group = "meas") %>%
@@ -232,7 +237,7 @@ shinyServer(
     output$t_range <- renderDygraph({
       if(length(dataWithoutNA_range()) != 0) {
         dygraph(dataWithoutNA_range()[, c("tmod", "tamb")],
-                xlab = "Time",
+                xlab = "",
                 main = "",
                 ylab = "Measured Temperature [°C]",
                 group = "meas") %>%
@@ -271,7 +276,7 @@ shinyServer(
                                albedo = modelled()$irrad_sim.albedo),
                     order.by = index(dataWithoutNA_range()))
         dygraph(d,
-                xlab = "Time",
+                xlab = "",
                 main = "",
                 ylab = "Transposed GHI Components on the POA [Wm-2]",
                 group = "models") %>%
@@ -308,7 +313,7 @@ shinyServer(
                                anisotropic = modelled()$irrad_sim.diffuse_aniso),
                     order.by = index(dataWithoutNA_range()))
         dygraph(d,
-                xlab = "Time",
+                xlab = "",
                 main = "",
                 ylab = "Diffuse Irradiance on the POA [Wm-2]",
                 group = "models")  %>%
@@ -326,87 +331,121 @@ shinyServer(
         geom_point(aes(y = ifelse(pdc_outliers.fault, pdc_outliers.corr, NA),
                        col = "red", size = 1.5)) +
         geom_line(aes(y = pdc_outliers.corr)) +
+        ylab("DC Power [W]") +
+        xlab("") +
         theme(legend.position = "none")
-    })
+    }, bg = "transparent")
 
     output$vdc_outliers_range <- renderPlot({
       ggplot(outliers(), aes(x = index(dataWithoutNA_range()))) +
         geom_point(aes(y = ifelse(vdc_outliers.fault, vdc_outliers.corr, NA),
                        col = "red", size = 1.5)) +
         geom_line(aes(y = vdc_outliers.corr)) +
+        ylab("DC Voltage [V]") +
+        xlab("") +
         theme(legend.position = "none")
-    })
+    }, bg = "transparent")
+
+    output$idc_outliers_range <- renderPlot({
+      ggplot(outliers(), aes(x = index(dataWithoutNA_range()))) +
+        geom_point(aes(y = ifelse(idc_outliers.fault, idc_outliers.corr, NA),
+                       col = "red", size = 1.5)) +
+        geom_line(aes(y = idc_outliers.corr)) +
+        ylab("DC Current [A]") +
+        xlab("") +
+        theme(legend.position = "none")
+    }, bg = "transparent")
 
     output$irrad_outliers_range <- renderPlot({
       ggplot(outliers(), aes(x = index(dataWithoutNA_range()))) +
         geom_point(aes(y = ifelse(irrad_outliers.fault, irrad_outliers.corr, NA),
                        col = "red", size = 1.5)) +
         geom_line(aes(y = irrad_outliers.corr)) +
+        ylab("Global Irradiance on the POA [Wm-2]") +
+        xlab("") +
         theme(legend.position = "none")
-    })
+    }, bg = "transparent")
 
     output$elc_range <- renderDygraph({
       if(length(dataWithoutNA_range()) != 0) {
-        d <- classified()[, c()]
-        dygraph(y$eLc, main = "") %>%
+        d <- as.zoo(data.frame(elc = classified()$elc,
+                               elc_limit_up = classified()$elc_lim_up,
+                               elc_limit_down = classified()$elc_lim_down),
+                    order.by = index(dataWithoutNA_range()))
+        dygraph(d,
+                xlab = "",
+                main = "",
+                ylab = "ELc Capture Losses [a.u]",
+                group = "outliers")  %>%
           dyOptions(colors = RColorBrewer::brewer.pal(8, "Set1"),
                     useDataTimezone = TRUE)  %>%
-          # dyAxis("y", label = "ELc", valueRange = c(-70, 70)) %>%
-          # dyLimit(15, color = "red") %>%
-          # dyLimit(-25, color = "red") %>%
           dyRangeSelector()
       }
     })
 
-    output$ei_ev_range <- renderDygraph({
+    output$ev_range <- renderDygraph({
       if(length(dataWithoutNA_range()) != 0) {
-        y <- determining_fault_gcsi_range()
-        toplot<- cbind(y$ei, y$ev)
-        colnames(toplot) <- c("Ei", "Ev")
-        dygraph(toplot, main = "") %>%
-          dyOptions(colors = RColorBrewer::brewer.pal(8, "Dark2"),
+        d <- as.zoo(data.frame(ev = classified()$ev,
+                               ev_limit_up = classified()$ev_lim_up,
+                               ev_limit_down = classified()$ev_lim_down),
+                    order.by = index(dataWithoutNA_range()))
+        dygraph(d,
+                xlab = "",
+                main = "",
+                ylab = "Ev Capture Losses [a.u]",
+                group = "outliers")  %>%
+          dyOptions(colors = RColorBrewer::brewer.pal(8, "Set1"),
                     useDataTimezone = TRUE)  %>%
-          # dyAxis("y", label = "Ei, Ev",valueRange = c(-1.5, 2)) %>%
-          # dyLimit(-0.5, color = "red") %>%
-          # dyLimit(1.5, color = "red") %>%
-          # dyLimit(-0.5, color = "red") %>%
-          # dyLimit(1.5, color = "red") %>%
           dyRangeSelector()
       }
     })
 
-    output$ghi_error_range <- renderPlot({
+    output$ei_range <- renderDygraph({
       if(length(dataWithoutNA_range()) != 0) {
-        data <- irrad_sim_on_inclined_surface_range()
-        model <- lm(data$irrad_gsim ~ data$irrad_gcsi)
-        qplot(y = data$irrad_gsim, x = data$irrad_gcsi) +
-          geom_abline() +
-          geom_abline(slope = (model$coefficients[2]) * 0.75,
-                      intercept = model$coefficients[1] - 30, col = "red") +
-          geom_abline(slope = (model$coefficients[2]) * 1.25,
-                      intercept = model$coefficients[1] + 30, col = "red") +
-          xlab("Measured Solar Irradiance [Wm-2]") +
-          ylab("Modelled Solar Irradiance [Wm-2]")
+        d <- as.zoo(data.frame(ei = classified()$ei,
+                               ei_limit_up = classified()$ei_lim_up,
+                               ei_limit_down = classified()$ei_lim_down),
+                    order.by = index(dataWithoutNA_range()))
+        dygraph(d,
+                xlab = "",
+                main = "",
+                ylab = "Ei Capture Losses [a.u]",
+                group = "outliers")  %>%
+          dyOptions(colors = RColorBrewer::brewer.pal(8, "Set1"),
+                    useDataTimezone = TRUE)  %>%
+          dyRangeSelector()
       }
-    }, bg = "transparent")
-
-    output$pdc_error_range <- renderPlot({
-      if(length(dataWithoutNA_range()) != 0) {
-        model <- lm(models_gcsi_range()$power_dc_sim_gsim ~ dataWithoutNA_range()$pdc)
-        qplot(y = models_gcsi_range()$power_dc_sim_gsim,
-              x = dataWithoutNA_range()$pdc) +
-          geom_abline() +
-          geom_abline(slope = (model$coefficients[2]) * 0.75,
-                      intercept = model$coefficients[1] - 30, col = "red") +
-          geom_abline(slope = (model$coefficients[2]) * 1.25,
-                      intercept = model$coefficients[1] + 30, col = "red") +
-          xlab("Measured Pdc [W]") + ylab("Modelled Pdc [W]")
-      }
-    }, bg = "transparent")
+    })
 
 
     # Fault classification tab ------------------------------------------------
 
+    output$fault_classification <- renderDygraph({
+      if(length(dataWithoutNA_range()) != 0) {
+        d <- as.zoo(data.frame(pdc = dataWithoutNA_range()$pdc,
+                               mppt_error = ifelse(classified()$short_circuit,
+                                                   dataWithoutNA_range()$pdc *
+                                                     classified()$short_circuit, NA),
+                               disconnection = ifelse(classified()$disconnection,
+                                                      dataWithoutNA_range()$pdc *
+                                                        classified()$disconnection, NA),
+                               shading = ifelse(classified()$shading,
+                                                dataWithoutNA_range()$pdc *
+                                                  classified()$shading, NA)),
+                    order.by = index(dataWithoutNA_range()))
+        dygraph(d,
+                xlab = "",
+                main = "",
+                ylab = "Measured DC Power [W]")  %>%
+          dySeries("pdc") %>%
+          dySeries("short_circuit", drawPoints = TRUE, strokeWidth = 0, pointSize = 5) %>%
+          dySeries("disconnection", drawPoints = TRUE, strokeWidth = 0, pointSize = 5) %>%
+          dySeries("shading", drawPoints = TRUE, strokeWidth = 0, pointSize = 5) %>%
+          dyOptions(colors = RColorBrewer::brewer.pal(4, "Set2"),
+                    useDataTimezone = TRUE)  %>%
+          dyRangeSelector()
+      }
+    })
 
 
   })

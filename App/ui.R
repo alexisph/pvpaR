@@ -185,47 +185,23 @@ shinyUI(
                    p(""),
                    plotOutput("vdc_outliers_range"),
                    p(""),
+                   plotOutput("idc_outliers_range"),
+                   p(""),
                    plotOutput("irrad_outliers_range"),
                    p(""),
 
-                   h4("Capture Losses Error"),
+                   h4("Capture Losses Errors"),
                    dygraphOutput("elc_range"),
                    p(""),
-                   dygraphOutput("ei_ev_range"),
+                   dygraphOutput("ev_range"),
+                   p(""),
+                   dygraphOutput("ei_range"),
                    hr()
           ),
 
           tabPanel("Fault classification", icon = icon("object-group"),
-                   h4("Shading / Soiling of the PV array"),
-                   tableOutput("shading_array"), p(""),
-                   hr(),
-
-                   h4("Shading / Soiling of the irradiance sensor"),
-                   tableOutput("shading_sensor"), p(""),
-                   hr(),
-
-                   h4("DC Power not as expected"),
-                   tableOutput("fault_pdc"), p(""),
-                   hr(),
-
-                   h4("DC current not as expected"),
-                   tableOutput("fault_idc"), p(""),
-                   hr(),
-
-                   h4("AC power not as expected"),
-                   tableOutput("fault_pac"), p(""),
-                   hr(),
-
-                   h4("Partial shading of the PV array / Blocking diode failure"),
-                   tableOutput("ei_fault2"), p(""),
-                   hr(),
-
-                   h4("Short circuit of one or more modules / bypass diodes or PV array at open circuit"),
-                   tableOutput("ev_fault"), p(""),
-                   hr(),
-
-                   h4("Disconnection of one or more modules"),
-                   tableOutput("disconnection"), p(""),
+                   h4("Classified fault instances"),
+                   dygraphOutput("fault_classification"),
                    hr()
           )
         ),
