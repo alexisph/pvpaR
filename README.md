@@ -8,27 +8,26 @@
 
 _**pvpaR** is a platform for the automatic identification and classification of faults and performance loss in Photovoltaic systems_
 
-The paper describing the platform will be published in the 43rd IEEE Photovoltaic Specialists conference proceedings, under the title "Development of a Novel Web Application for Automatic Photovoltaic System Performance Analysis and Fault Identification."
-A poster will be presented at the above conference on the 8th of June 2016, at 12:00 in Area 9, Exhibit Hall A1, Oregon Convention Center.
+The paper describing the platform was published in the 43rd IEEE Photovoltaic Specialists conference proceedings, under the title "Development of a Novel Web Application for Automatic Photovoltaic System Performance Analysis and Fault Identification."
+A poster was presented at the above conference on the 8th of June 2016, at 12:00 in Area 9, Exhibit Hall A1, Oregon Convention Center.
 
 
 ## Features
 
-- Import [time-series](https://cran.r-project.org/web/views/TimeSeries.html) of PV system measurements and meteorological conditions
-- Imported data can be in the form of flat files (e.g. csv, xls(x), txt etc.) or database tables (e.g. MySQL, PostgreSQL, Redis, SQLite, MongoDB, Cassandra etc.) or scraped from the [web](https://cran.r-project.org/web/views/WebTechnologies.html)
-- User selectable date ranges
-- Plot measurements and model results as [dynamic graphs](http://dygraphs.com/)
-- Model the expected PV system performance from meteorological measurements
+- Import [time-series](https://cran.r-project.org/web/views/TimeSeries.html) of PV system and meteorological measurements. Imported data can be in the form of flat files (e.g. csv, xls(x), txt etc.) or database tables (e.g. MySQL, PostgreSQL, Redis, SQLite, MongoDB, Cassandra etc.) or scraped from the [web](https://cran.r-project.org/web/views/WebTechnologies.html)
+- User selectable date ranges applied to the whole platform
+- Plot measurements and model results in [interactive graphs](http://dygraphs.com/)
+- Model the expected PV system performance from meteorological measurements and past PV system performance
 - Model and [transpose](https://cran.r-project.org/web/packages/solaR/index.html) the incident irradiance to the plane of array
 - Model module temperature
-- Compares model results with recorded measurements and checks for measurement errors
-- Identifies outliers and abnormal performance losses
-- Classifies the identified faults and shows the occurence of the identified fault
+- Compare model results with actual measurements and indicate measurement errors
+- Identify faults and sub-optimal performance
+- Classify identified faults
 
 
 ## Usage
 
-Create a spec file describing the PV system. For an example see [specs.R](App/specs.R)
+Create a specification file describing the PV system. For an example see [specs.R](App/specs.R)
 
 Run the `runShiny.R` script:
 
@@ -42,46 +41,6 @@ or, to run R in a separate process:
 ## Bugs
 
 Submit any bugs as [issues](https://github.com/alexisph/pvpaR/issues).
-
-
-## Roadmap
-
-The following features are planned for development:
-
-- KPIs
-    1. Performance Ratio
-    2. Exported energy (and all-time high)
-    3. System uptime and downtime
-    4. Expected energy yield (e.g. progress bar)
-    5. ~~Inverter efficiency~~
-- Granularity
-    1. Dataset minimum
-    2. 15 min
-    3. Hourly
-    4. Daily
-    5. Monthly
-    6. Yearly
-- ~~Modifiable settings (e.g. soiling)~~
-- RMSE, MAE and MBE for V, I, G and P predictions
-- User selectable sources of irradiance:
-    - Locally measured GHI transposed onto the plane of array (POA)
-    - Locally measured Gpoa
-    - PVGIS or NASA hourly on the POA
-    - Clear-sky model
-- User selectable sources of temperature:
-    - Locally measured Tmod
-    - Locally measured Tamb and u_w used to predict Tmod
-    - Tamb from NASA or PVGIS
-- Estimation of seasonal and trend components
-- Separate early degradation from long-term degradation trend
-- User selectable filters such as:
-    - High Gi
-    - Low Gi
-    - Low AOI
-    - Low Gi volatility
-    - Low u_w value and volatility (for temperature stability)
-    - Irradiance around the maximum unclipped power
-- Cache results, e.g. [archivist](https://cran.r-project.org/web/packages/archivist/index.html)
 
 
 ## Contributing
@@ -107,3 +66,4 @@ See the GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
